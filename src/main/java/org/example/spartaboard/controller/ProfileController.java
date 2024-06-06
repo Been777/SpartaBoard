@@ -24,12 +24,15 @@ public class ProfileController {
 
     //프로필 수정 //mock up (UserDetails 대신 user)
     @PatchMapping("/update")
-    public ResponseEntity<ProfileResponseDto> updateProfile(ProfileModifyRequestDto modifyRequestDto) {
-        User user = new User();
-        // 비밀번호 형식은 user 정보에서 설정
+    public ResponseEntity<ProfileResponseDto> updateProfile(
+//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody ProfileModifyRequestDto modifyRequestDto) {
+        //비밀번호 형식은 user 정보에서 설정
         //pwRequestDto 가 채워져 있을 경우 검증 거치기 (기존 비밀번호 확인 / 입력받아야 함)
         //비워져 있으면 그냥 Service 의 메서드로 보내기
-        return profileService.updateProfile(modifyRequestDto, user);
+//        String userId = userDetails.getUser().getUserId();
+        String userId = "abc";
+        return profileService.updateProfile(modifyRequestDto, userId);
     }
 
     private boolean authorizePassword(String newPassword) {

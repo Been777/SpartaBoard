@@ -1,8 +1,7 @@
 package org.example.spartaboard.service;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.spartaboard.dto.ProfileModifyRequestDto;
 import org.example.spartaboard.dto.ProfileRequestDto;
 import org.example.spartaboard.dto.ProfileResponseDto;
@@ -11,11 +10,15 @@ import org.example.spartaboard.entity.UserStatus;
 import org.example.spartaboard.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.lang.reflect.Field;
+import java.util.Optional;
+
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ProfileService {
@@ -27,7 +30,7 @@ public class ProfileService {
 
         //requestDto 의 UserId 로 DB 에서 일치하는 (조회 할) 유저 찾기
         String requestUserId = requestDto.getUserId();
-        User requestUser = userRepository.findByuserId(requestUserId)
+        User requestUser = userRepository.findByUserId(requestUserId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"잘못된 접근입니다.")
         );
 
@@ -40,27 +43,24 @@ public class ProfileService {
         return ResponseEntity.ok(new ProfileResponseDto(requestUser));
     }
 
-    //본인 프로필 수정(username,introduce) // 예외: 비밀번호 형식이 올바르지 않은 경우 - dto 선에서 처리됨
+    //본인 프로필 수정(username,introduce)
     @Transactional
-    public ResponseEntity<ProfileResponseDto> updateProfile(ProfileModifyRequestDto modifyRequestDto, User user) {
+    public ResponseEntity<ProfileResponseDto> updateProfile(ProfileModifyRequestDto modifyRequestDto, String userId) {
+        //빈 dto 라면 "수정할 내역 없음"
+        nullCheck(modifyRequestDto);
 
-        User authorizeUser = userRepository.findById(user.getId())
+        User authorizeUser = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"잘못된 접근입니다.")
         );
 
-//        //빈 dto 라면 "수정할 내역 없음"
-//        if (modifyRequestDto.getUsername().) {
-//            throw new IllegalArgumentException("수정할 내용이 없습니다.");
-//        }
+        writePasswordCheck(modifyRequestDto, authorizeUser);
 
-        writePasswordCheck(modifyRequestDto, user);
-
-
-        //Dto 필드 입력값을 체크하고, 입력값이 있는 경우 null 반영되지 않도록 업데이트(비밀번호 포함)
+        //Dto 필드 입력값을 체크하고, 입력값이 있는 경우 null 반영되지 않도록 하며 업데이트(비밀번호 포함)
         authorizeUser.update(modifyRequestDto);
 
         return ResponseEntity.ok(new ProfileResponseDto(authorizeUser));
     }
+
 
     //old 와 new 패스워드 모두 입력 되었는지 확인하는 메서드
     private void writePasswordCheck(ProfileModifyRequestDto modifyRequestDto, User user) {
@@ -92,7 +92,22 @@ public class ProfileService {
         //개발자도구에 httpStatus 기록하려면 log 등록?
     }
 
-
-
-
+    //null check 메서드
+    private void nullCheck(ProfileModifyRequestDto dto) {
+        try {
+            Field[] fields = dto.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                log.warn(field.getName() + " : " );
+                field.setAccessible(true);
+                Object value = field.get(dto);
+                if (value == null) {
+                    log.warn("null입니다.");
+                } else {
+                    log.warn(value.toString());
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Null Check 중 error 발생");
+        }
+    }
 }

@@ -14,6 +14,4 @@ public class ProfileModifyRequestDto {
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{10,}$")
     private String oldPassword;
 
-
-
 }
