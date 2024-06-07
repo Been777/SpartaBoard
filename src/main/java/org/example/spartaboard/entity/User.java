@@ -3,10 +3,11 @@ package org.example.spartaboard.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.spartaboard.dto.ProfileModifyRequestDto;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -18,10 +19,11 @@ public class User extends Timestamped{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank//가입시 필수
     @Column(nullable = false, unique = true)
     private String userId;
 
-    @NotBlank
+    @NotBlank//가입시 필수
     @Column(nullable = false)
     private String password;
 
@@ -40,9 +42,13 @@ public class User extends Timestamped{
     @Column(nullable = false)
     private UserStatus status;
 
-
     //refresh token 설정 필요
 
+    //상태 변경 시간
+    //userEntity 에만 필요하므로 User 에 위치시킴
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime StatusChangedAt;
 
     public void update(ProfileModifyRequestDto requestDto) {
         if (requestDto.getUsername() != null) {
