@@ -1,5 +1,6 @@
 package org.example.spartaboard.service;
 
+import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.spartaboard.dto.ProfileModifyRequestDto;
@@ -34,12 +35,11 @@ public class ProfileService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"잘못된 접근입니다.")
         );
 
-        //Request 의 user 가 탈퇴(DEACTIVATED) 인지 아닌지(ACTIVE) 확인 //회원탈퇴시 상태만 변경하기 때문에 확인을 거치는게 맞으나, 요구사항에 없기때문에 하지 않아도 되긴 함
+        //Request 의 user 가 탈퇴(INACTIVE) 인지 아닌지(ACTIVE) 확인 //회원탈퇴시 상태만 변경하기 때문에 확인을 거치는게 맞으나, 요구사항에 없기때문에 하지 않아도 되긴 함
         boolean activeUser = userRepository.existsUserByUserIdAndStatus(requestUserId, UserStatus.ACTIVE);
         if (!activeUser) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
         return ResponseEntity.ok(new ProfileResponseDto(requestUser));
     }
 
@@ -48,16 +48,13 @@ public class ProfileService {
     public ResponseEntity<ProfileResponseDto> updateProfile(ProfileModifyRequestDto modifyRequestDto, String userId) {
         //빈 dto 라면 "수정할 내역 없음"
         nullCheck(modifyRequestDto);
-
         User authorizeUser = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"잘못된 접근입니다.")
         );
-
         writePasswordCheck(modifyRequestDto, authorizeUser);
 
         //Dto 필드 입력값을 체크하고, 입력값이 있는 경우 null 반영되지 않도록 하며 업데이트(비밀번호 포함)
         authorizeUser.update(modifyRequestDto);
-
         return ResponseEntity.ok(new ProfileResponseDto(authorizeUser));
     }
 
@@ -79,6 +76,7 @@ public class ProfileService {
             passwordCheck(newPW, oldPW, originalPW);
         }
     }
+
     //비밀번호 형식이 올비른지 확인 //기존 password 확인하는 메서드
     private void passwordCheck(String newPW, String oldPW, String originalPW) {
         //확인용 비밀번호가 original 비밀번호와 일치하지 않은 경우 -> Exception
@@ -89,11 +87,11 @@ public class ProfileService {
         if(newPW.equals(originalPW)) {
             throw new IllegalArgumentException("이미 사용중인 비밀번호 입니다.");
         }
-        //개발자도구에 httpStatus 기록하려면 log 등록?
     }
 
     //null check 메서드
     private void nullCheck(ProfileModifyRequestDto dto) {
+        boolean fieldIsNull = true;
         try {
             Field[] fields = dto.getClass().getDeclaredFields();
             for (Field field : fields) {
@@ -104,10 +102,15 @@ public class ProfileService {
                     log.warn("null입니다.");
                 } else {
                     log.warn(value.toString());
+                    fieldIsNull = false;
                 }
             }
         } catch (Exception e) {
             log.warn("Null Check 중 error 발생");
+        }
+        //모든 field 가 null 인 경우 사용자에게 알리기(exception 처리)
+        if (fieldIsNull) {
+            throw new NoResultException("수정할 내용이 없습니다.");
         }
     }
 }
