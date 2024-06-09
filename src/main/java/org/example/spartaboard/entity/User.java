@@ -44,7 +44,8 @@ public class User extends Timestamped{
     @Column(nullable = false)
     private UserStatus status;
 
-    //refresh token 설정 필요
+    @Column
+    private String refreshToken;
 
     //상태 변경 시간
     //userEntity 에만 필요하므로 User 에 위치시킴
