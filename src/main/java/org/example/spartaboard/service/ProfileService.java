@@ -11,13 +11,12 @@ import org.example.spartaboard.entity.UserStatus;
 import org.example.spartaboard.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.reflect.Field;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,8 +25,14 @@ public class ProfileService {
 
     private final UserRepository userRepository;
 
-    //프로필 조회 //추후 security 작업 후 UserDetails 로 변경하여 재작성 할 것
-    public ResponseEntity<ProfileResponseDto> showProfile(ProfileRequestDto requestDto) {
+    //프로필 조회
+    public ResponseEntity<ProfileResponseDto> showProfile(ProfileRequestDto requestDto, Long loginUserId) {
+
+        //프로필 조회를 요청한 사람이 ACTIVE 인지 아닌지 확인
+        boolean activeLoginUser = userRepository.existsUserByIdAndStatus(loginUserId, UserStatus.ACTIVE);
+        if (!activeLoginUser) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         //requestDto 의 UserId 로 DB 에서 일치하는 (조회 할) 유저 찾기
         String requestUserId = requestDto.getUserId();
@@ -35,13 +40,16 @@ public class ProfileService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"잘못된 접근입니다.")
         );
 
-        //Request 의 user 가 탈퇴(INACTIVE) 인지 아닌지(ACTIVE) 확인 //회원탈퇴시 상태만 변경하기 때문에 확인을 거치는게 맞으나, 요구사항에 없기때문에 하지 않아도 되긴 함
+        //Request 의 user(프로필주인) 가 탈퇴(INACTIVE) 인지 아닌지(ACTIVE) 확인 //회원탈퇴시 상태만 변경하기 때문에 확인을 거치는게 맞으나, 요구사항에 없기때문에 하지 않아도 되긴 함
         boolean activeUser = userRepository.existsUserByUserIdAndStatus(requestUserId, UserStatus.ACTIVE);
         if (!activeUser) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         return ResponseEntity.ok(new ProfileResponseDto(requestUser));
     }
+
+    //본인 프로필 조회 따로 작성? 본인거를 보라는 건지, 작성자들 거(본인포함)를 보라는 건지 모르겠음
+
 
     //본인 프로필 수정(username,introduce)
     @Transactional
@@ -113,4 +121,5 @@ public class ProfileService {
             throw new NoResultException("수정할 내용이 없습니다.");
         }
     }
+
 }
