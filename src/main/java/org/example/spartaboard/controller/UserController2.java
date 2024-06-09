@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.spartaboard.Security.UserDetailsImpl;
-import org.example.spartaboard.dto.UserRequestDto2;
+// import org.example.spartaboard.dto.UserRequestDto2;
 import org.example.spartaboard.entity.User;
 import org.example.spartaboard.service.UserService2;
 import org.springframework.http.ResponseEntity;
@@ -31,12 +31,12 @@ public class UserController2 {
 
 
     //회원 탈퇴
-    @PutMapping("/delete")
-    public ResponseEntity<String> deleteUser (@RequestBody UserRequestDto2 RequestDto,
-                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        User loginUser = userDetails.getUser();
-        return userService.deleteUser(RequestDto, loginUser);
-    }
+//    @PutMapping("/delete")
+//    public ResponseEntity<String> deleteUser (@RequestBody UserRequestDto2 RequestDto,
+//                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+//        User loginUser = userDetails.getUser();
+//        return userService.deleteUser(RequestDto, loginUser);
+//    }
 
 
 

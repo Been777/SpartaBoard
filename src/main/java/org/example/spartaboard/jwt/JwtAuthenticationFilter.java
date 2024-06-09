@@ -24,23 +24,23 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         setFilterProcessesUrl("/api/user/login");
     }
 
-    @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        try {
-            LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
-
-            return getAuthenticationManager().authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            requestDto.getUserId(),
-                            requestDto.getPassword(),
-                            null
-                    )
-            );
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new RuntimeException(e.getMessage());
-        }
-    }
+//    @Override
+//    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+//        try {
+//            LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
+//
+//            return getAuthenticationManager().authenticate(
+//                    new UsernamePasswordAuthenticationToken(
+//                            requestDto.getUserId(),
+//                            requestDto.getPassword(),
+//                            null
+//                    )
+//            );
+//        } catch (IOException e) {
+//            log.error(e.getMessage());
+//            throw new RuntimeException(e.getMessage());
+//        }
+//    }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {

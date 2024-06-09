@@ -3,6 +3,7 @@ package org.example.spartaboard.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.spartaboard.dto.PostResponseDto2;
 
 @Getter
 @Entity
@@ -21,8 +22,19 @@ public class Post2 extends Timestamped {
     @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String content;
 
-    public Post2(User user, String content) {
+    @Column(columnDefinition = "LONGTEXT", nullable = false)
+    private String date;
+
+    public Post2(User user, String content, String date) {
         this.user = user;
         this.content = content;
+        this.date = date; // 자동 생성된 날짜 엔티티
+    }
+
+    public Post2(Post2 id,PostResponseDto2 postRequestDto2) {
+        super();
+    this.id= id.getId();
+    this.content =postRequestDto2.content;
+    this.date = postRequestDto2.date;
     }
 }

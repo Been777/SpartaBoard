@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.example.spartaboard.dto.UserRequestDto2;
+// import org.example.spartaboard.dto.UserRequestDto2;
 import org.example.spartaboard.entity.User;
 import org.example.spartaboard.entity.UserStatus;
 import org.example.spartaboard.repository.UserRepository;
@@ -34,28 +34,28 @@ public class UserService2 {
 
 
     //회원 탈퇴
-    @Transactional
-    public ResponseEntity<String> deleteUser(UserRequestDto2 requestDto, User loginUser) {
-        Long loginId = loginUser.getId(); //이걸 사용할 필요성에 대해 >> ACTIVE 확인할 때.. 메서드 공유때문
-        String loginUserPW = loginUser.getPassword();
-        String loginUserId = loginUser.getUserId();
-        String requestPW = requestDto.getPassword();
-        String requestUserId = requestDto.getUserId();
-
-        // login 유저가 ACTIVE 상태인지 확인 -> INACTIVE 상태라면 "잘못된 접근입니다"
-        boolean activeLoginUser = userRepository.existsUserByIdAndStatus(loginId, UserStatus.ACTIVE);
-        if (!activeLoginUser) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 접근입니다.");
-        }
-
-        // 확인용(requestDto)의 비밀번호/UserId가 loginUser 의 비밀번호/UserId와 불일치 -> Exception
-        if (!requestPW.equals(loginUserPW) || !requestUserId.equals(loginUserId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 접근입니다.");
-        }
-
-        // 상태변경
-        loginUser.changeStatus();
-        return ResponseEntity.ok("탈퇴되었습니다.");
-    }
+//    @Transactional
+//    public ResponseEntity<String> deleteUser(UserRequestDto2 requestDto, User loginUser) {
+//        Long loginId = loginUser.getId(); //이걸 사용할 필요성에 대해 >> ACTIVE 확인할 때.. 메서드 공유때문
+//        String loginUserPW = loginUser.getPassword();
+//        String loginUserId = loginUser.getUserId();
+//        String requestPW = requestDto.getPassword();
+//        String requestUserId = requestDto.getUserId();
+//
+//        // login 유저가 ACTIVE 상태인지 확인 -> INACTIVE 상태라면 "잘못된 접근입니다"
+//        boolean activeLoginUser = userRepository.existsUserByIdAndStatus(loginId, UserStatus.ACTIVE);
+//        if (!activeLoginUser) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 접근입니다.");
+//        }
+//
+//        // 확인용(requestDto)의 비밀번호/UserId가 loginUser 의 비밀번호/UserId와 불일치 -> Exception
+//        if (!requestPW.equals(loginUserPW) || !requestUserId.equals(loginUserId)) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 접근입니다.");
+//        }
+//
+//        // 상태변경
+//        loginUser.changeStatus();
+//        return ResponseEntity.ok("탈퇴되었습니다.");
+//    }
 }
 
