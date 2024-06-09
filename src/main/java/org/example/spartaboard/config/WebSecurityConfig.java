@@ -67,17 +67,17 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증처리
         );
 
-        //로그인 사용
-        http.formLogin((formLogin) -> //FormLogin 즉, 직접 만든 로그인페이지를 사용할 거라서 login page 설정하는 것
+        //로그인 사용 //FormLogin 즉, 직접 만든 로그인페이지를 사용할 거라서 login page 설정하는 것 (security 에서 제공하는 페이지가 아닌것)
+        http.formLogin((formLogin) ->
                 formLogin
                         .loginProcessingUrl("/api/users/login") //로그인 처리하는 곳
                         .defaultSuccessUrl("/") //로그인 처리 후 성공 시 이동하는 url
-                        .failurUrl("/") //로그인 처리 후 실패시 보이는 url
+                        .failurUrl("/api/users/login?error") //로그인 처리 후 실패시 보이는 url
                         .permitAll()
 
         );
 
-        // 필터 관리
+        // 필터 순서 관리
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
