@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.example.spartaboard.dto.ProfileModifyRequestDto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -50,6 +52,9 @@ public class User extends Timestamped{
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime StatusChangedAt;
 
+    @OneToMany
+    List<Post2> PostList = new ArrayList<>();
+
     public void update(ProfileModifyRequestDto requestDto) {
         if (requestDto.getUsername() != null) {
             this.username = requestDto.getUsername();
@@ -63,5 +68,7 @@ public class User extends Timestamped{
 
     }
 
-
+    public void changeStatus() {
+        this.status = UserStatus.INACTIVE;
+    }
 }
