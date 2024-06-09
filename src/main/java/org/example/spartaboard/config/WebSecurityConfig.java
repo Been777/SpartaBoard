@@ -64,12 +64,17 @@ public class WebSecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
                         .requestMatchers("/api/users/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
-                        .anyRequest().authenticated() // 그 외 모든 요청 인증처리
+                        .anyRequest().authenticated() // 그 외 모든 요청은 인증처리
         );
 
+        //로그인 사용
         http.formLogin((formLogin) -> //FormLogin 즉, 직접 만든 로그인페이지를 사용할 거라서 login page 설정하는 것
                 formLogin
-                        .loginPage("/api/users/login-page").permitAll()
+                        .loginProcessingUrl("/api/users/login") //로그인 처리하는 곳
+                        .defaultSuccessUrl("/") //로그인 처리 후 성공 시 이동하는 url
+                        .failurUrl("/") //로그인 처리 후 실패시 보이는 url
+                        .permitAll()
+
         );
 
         // 필터 관리
