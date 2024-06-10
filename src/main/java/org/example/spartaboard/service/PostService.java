@@ -10,7 +10,6 @@ import org.example.spartaboard.repository.PostRepository;
 import java.util.List;
 
 @Service
-@Component
 
 public class PostService {
 
@@ -18,14 +17,12 @@ public class PostService {
 private final PostRepository postRepository;
 
     public PostService(PostRepository postRepository) {
-        this.postRepository = postRepository;
+        this.postRepository = postRepository; // 의존성 주입
     }
 
     public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto) {
         Post post = new Post(createPostRequestDto);
-
-        Post savedPost = postRepository.save(post);
-
+        postRepository.save(post);
         return new CreatePostResponseDto(post);
     }
 
