@@ -2,7 +2,6 @@ package org.example.spartaboard.entity;
 
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +14,7 @@ public class Post extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     @Column(nullable = false)
-    private Long postId;
+    private Long postid;
 
     @Column(nullable = false)
     private String title;
@@ -24,7 +23,7 @@ public class Post extends Timestamped {
     private String contents;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "userid", nullable = false)
     private User user;
 
     public Post(String title, String contents, User user) {
