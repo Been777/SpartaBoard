@@ -13,6 +13,7 @@ public class CommentResponseDto  {
     private Long id;
     private String contents;
     private Long userId;
+    private Long postid;
 
 
     public CommentResponseDto(Long id, String contents, Long userId) {
