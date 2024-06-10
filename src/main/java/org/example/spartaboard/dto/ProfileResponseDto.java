@@ -19,6 +19,4 @@ public class ProfileResponseDto {
         this.introduce = user.getIntroduce();
         this.email = user.getEmail();
     }
-
-
 }

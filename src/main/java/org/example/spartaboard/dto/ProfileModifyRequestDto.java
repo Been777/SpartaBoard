@@ -1,17 +1,14 @@
 package org.example.spartaboard.dto;
 
-import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class ProfileModifyRequestDto {
-
     private String username;
+    private String email;
     private String introduce;
-
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{10,}$")
-    private String newPassword;
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{10,}$")
     private String oldPassword;
-
+    private String newPassword;
 }
