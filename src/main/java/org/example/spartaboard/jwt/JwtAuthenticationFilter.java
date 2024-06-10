@@ -47,11 +47,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         log.info("로그인 성공 및 JWT 생성");
         UserDetailsImpl userDetails = (UserDetailsImpl) authResult.getPrincipal();
-        String username = userDetails.getUsername();
+        String userid = userDetails.getUser().getUserid();
         UserStatus status = userDetails.getUser().getStatus();
 
-        String accessToken = jwtUtil.createAccessToken(username, status);
-        String refreshToken = jwtUtil.createRefreshToken(username);
+        String accessToken = jwtUtil.createAccessToken(userid, status);
+        String refreshToken = jwtUtil.createRefreshToken(userid, status);
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
         response.addHeader("RefreshToken", refreshToken);
@@ -78,7 +78,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         response.getWriter().write(result);
     }
-
 
 
 }
