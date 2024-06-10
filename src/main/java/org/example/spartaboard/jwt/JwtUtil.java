@@ -5,8 +5,12 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.security.Key;
+import java.util.*;
+
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.json.Token;
 import org.example.spartaboard.entity.UserStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +29,8 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // Header KEY 값
     public static final String AUTHORIZATION_HEADER = "Authorization";
-    // 사용자 권한 값의 KEY
+    public static final String REFRESH_AUTHORIZATION_HEADER = "Refresh Authorization";
     public static final String AUTHORIZATION_KEY = "auth";
     // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
@@ -40,8 +43,6 @@ public class JwtUtil {
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
-    // 로그 설정
-    public static final Logger logger = LoggerFactory.getLogger("JWT 관련 로그");
 
     @PostConstruct
     public void init() {
@@ -49,53 +50,38 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    // AccessToken 생성
-    public String createAccessToken(String username, UserStatus status) {
-        return createToken(username, status, ACCESS_TOKEN_TIME);
-    }
-
-    // RefreshToken 생성
-    public String createRefreshToken(String username) {
-        return createToken(username, null, REFRESH_TOKEN_TIME);
-    }
-
-    // 토큰 생성 (내부에서 사용)
-    private String createToken(String username, UserStatus status, long expireTime) {
-        Date date = new Date();
-        JwtBuilder builder = Jwts.builder()
-                .setSubject(username) // 사용자 식별자값(ID)
-                .setExpiration(new Date(date.getTime() + expireTime)) // 만료 시간
-                .setIssuedAt(date) // 발급일
-                .signWith(key, signatureAlgorithm); // 암호화 알고리즘
-
-        if (status != null) {
-            builder.claim(AUTHORIZATION_KEY, status); // 사용자 권한
-        }
-
-        return BEARER_PREFIX + builder.compact();
-    }
-
-    // 토큰 생성 (UserRoleEnum 버전)
-    public String createToken(String username, UserStatus role) {
+    // 토큰 생성
+    public String createAccessToken(String userId, UserStatus status) {
         Date date = new Date();
 
         return BEARER_PREFIX +
                 Jwts.builder()
-                        .setSubject(username) // 사용자 식별자값(ID)
-                        .claim(AUTHORIZATION_KEY, role) // 사용자 권한
+                        .setSubject(userId) // 사용자 식별자값(ID)
+                        .claim(AUTHORIZATION_KEY, status) // 사용자 권한
                         .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_TIME)) // 만료 시간
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                         .compact();
     }
 
-    // header 에서 JWT 가져오기
-    public String getJwtFromHeader(HttpServletRequest request) {
-        return request.getHeader(AUTHORIZATION_HEADER);
+    //Refresh 토큰 생성
+    public String createRefreshToken(String userId, UserStatus status) {
+        Date date = new Date();
+
+        return BEARER_PREFIX +
+                Jwts.builder()
+                        .setSubject(userId)
+                        .claim(AUTHORIZATION_KEY, status) // 사용자 권한
+                        .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
+                        .setIssuedAt(date)
+                        .signWith(key, signatureAlgorithm)
+                        .compact();
     }
 
-    // JWT Token에서 Bearer 제거
-    public String getTokenWithoutBearer(String bearerToken) {
+
+    // header 에서 JWT 가져오기
+    public String getJwtFromHeader(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
@@ -166,13 +152,15 @@ public class JwtUtil {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
-            logger.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
+            log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
-            logger.error("Expired JWT token, 만료된 JWT token 입니다.");
+            log.error("Expired JWT token, 만료된 JWT token 입니다.");
         } catch (UnsupportedJwtException e) {
-            logger.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
+            log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
         } catch (IllegalArgumentException e) {
-            logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
+            log.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
+        } catch (JwtException e) {
+            log.error(" 토큰이 없거나, 유효하지 않습니다.");
         }
         return false;
     }

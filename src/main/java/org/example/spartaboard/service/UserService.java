@@ -45,7 +45,7 @@ public class UserService {
         }
 
         // 회원 중복 확인
-        Optional<User> checkUserid = userRepository.findByUserId(userid);
+        Optional<User> checkUserid = userRepository.findByUserid(userid);
         if (checkUserid.isPresent()) {
             throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
@@ -57,24 +57,15 @@ public class UserService {
             throw new IllegalArgumentException("중복된 Email 입니다.");
         }
 
-        // 사용자 ROLE 확인
-        UserStatus role = UserStatus.USER;
-        if (requestDto.isAdmin()) {
-            if (!ADMIN_TOKEN.equals(requestDto.getAdminToken())) {
-                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
-            }
-            role = UserStatus.ADMIN;
-        }
-
         UserStatus userStatus = UserStatus.ACTIVE;
 
         // 사용자 등록
-        User user = new User(userid, username, password, email, intro, role, userStatus);
+        User user = new User(userid, username, password, email, intro, userStatus);
         userRepository.save(user);
     }
 
     public void login(LoginRequestDto requestDto, HttpServletResponse res) {
-        String username = requestDto.getUserId();
+        String username = requestDto.getUserid();
         String password = requestDto.getPassword();
 
         // 사용자 확인
@@ -88,12 +79,22 @@ public class UserService {
         }
 
         // JWT 생성 및 쿠키에 저장 후 Response 객체에 추가
-        String token = jwtUtil.createToken(user.getUsername(), user.getRole());
+        String token = jwtUtil.createAccessToken(user.getUsername(), user.getStatus());
         jwtUtil.addJwtToCookie(token, res);
     }
 
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("등록된 사용자가 없습니다."));
+    }
+
+    // 토큰 무효화 //INACTIVE 이후 진행
+    //user 의 상태가 inactive 인 경우 refresh 토큰을 초기화
+    public String invalidateRefreshToken (User user) {
+        String refreshToken = user.getRefreshToken();
+        if (user.getStatus() == UserStatus.INACTIVE) {
+            user.setRefreshToken("");
+        }
+        return refreshToken;
     }
 }

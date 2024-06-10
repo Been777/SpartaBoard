@@ -20,7 +20,6 @@ import java.net.URLEncoder;
 public class AuthController {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
-
     private final JwtUtil jwtUtil;
 
     public AuthController(JwtUtil jwtUtil) {
@@ -38,7 +37,6 @@ public class AuthController {
     @GetMapping("/get-cookie")
     public String getCookie(@CookieValue(AUTHORIZATION_HEADER) String value) {
         System.out.println("value = " + value);
-
         return "getCookie : " + value;
     }
 
@@ -67,11 +65,10 @@ public class AuthController {
     @GetMapping("/create-jwt")
     public String createJwt(HttpServletResponse res) {
         // Jwt 생성
-        String token = jwtUtil.createToken("Robbie", UserStatus.USER);
+        String token = jwtUtil.createAccessToken("Robbie", UserStatus.ACTIVE);
 
         // Jwt 쿠키 저장
         jwtUtil.addJwtToCookie(token, res);
-
         return "createJwt : " + token;
     }
 
