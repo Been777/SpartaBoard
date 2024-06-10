@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.spartaboard.entity.Post;
+import org.example.spartaboard.entity.User;
 
 @NoArgsConstructor
 @Getter
