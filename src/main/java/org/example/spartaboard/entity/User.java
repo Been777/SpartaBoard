@@ -46,10 +46,6 @@ public class User extends Timestamped {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserStatus role;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private UserStatus status;
 
     @Column
@@ -60,13 +56,12 @@ public class User extends Timestamped {
     private String refreshToken;
 
     public User(String userid, String username, String password, String email,
-                String introduce, UserStatus role, UserStatus status) {
+                String introduce, UserStatus status) {
         this.userid = userid;
         this.username = username;
         this.password = password;
         this.email = email;
         this.introduce = introduce;
-        this.role = role;
         this.status = status;
     }
 
