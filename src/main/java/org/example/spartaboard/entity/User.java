@@ -3,34 +3,37 @@ package org.example.spartaboard.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.example.spartaboard.dto.ProfileModifyRequestDto;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
-@Entity
+@Setter
 @NoArgsConstructor
-@Table(name="user")
-public class User extends Timestamped{
+@AllArgsConstructor
+@Entity
+@Table(name = "user")
+public class User extends Timestamped {
 
-    @Id //찾을 때 추천(고유)
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank//가입시 필수
+    @NotBlank
     @Column(nullable = false, unique = true)
     private String userId;
 
-    @NotBlank//가입시 필수
-    @Column(nullable = false)
-    private String password;
-
+    @NotBlank
     @Column(nullable = false)
     private String username;
+
+    @NotBlank
+    @Column(nullable = false)
+    private String password;
 
     @NotBlank
     @Email
@@ -38,23 +41,33 @@ public class User extends Timestamped{
     private String email;
 
     @Column
-    private String introduce;
+    private String introduce; // intro -> introduce
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserStatus role;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserStatus status;
 
     @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime statusChangedAt;
+
+    // Refresh Token을 저장할 필드
+    @Column
     private String refreshToken;
 
-    //상태 변경 시간
-    //userEntity 에만 필요하므로 User 에 위치시킴
-    @Column
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime StatusChangedAt;
-
-    @OneToMany
-    List<Post2> PostList = new ArrayList<>();
+    public User(String userId, String username, String password, String email, String introduce, UserStatus role, UserStatus status) {
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.introduce = introduce;
+        this.role = role;
+        this.status = status;
+    }
 
     public void update(ProfileModifyRequestDto requestDto) {
         if (requestDto.getUsername() != null) {
@@ -66,10 +79,5 @@ public class User extends Timestamped{
         if (requestDto.getNewPassword() != null) {
             this.password = requestDto.getNewPassword();
         }
-
-    }
-
-    public void changeStatus() {
-        this.status = UserStatus.INACTIVE;
     }
 }
