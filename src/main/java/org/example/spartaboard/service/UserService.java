@@ -51,7 +51,7 @@ public class UserService {
         }
 
         // 회원 중복 확인
-        Optional<User> checkUserid = userRepository.findByUserid(userid);
+        Optional<User> checkUserid = userRepository.findByUserId(userid);
         if (checkUserid.isPresent()) {
             throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
