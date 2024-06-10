@@ -16,12 +16,10 @@ public abstract class Timestamped {
     @CreatedDate
     @Column(updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime create_at;
+    private LocalDateTime createAt;
 
     @LastModifiedDate
     @Column
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime update_at;
-
-
+    private LocalDateTime updateAt;
 }

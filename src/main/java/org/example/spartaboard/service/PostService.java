@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.example.spartaboard.dto.CreatePostRequestDto;
 import org.example.spartaboard.dto.CreatePostResponseDto;
 import org.example.spartaboard.entity.Post;
+import org.example.spartaboard.entity.Timestamped;
 import org.example.spartaboard.entity.User;
 import org.example.spartaboard.repository.PostRepository;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @Service
 
-public class PostService {
+public class PostService extends Timestamped {
     public String Userinfo(CreatePostResponseDto createPostResponseDto) {
         long userid = createPostResponseDto.getId();
         //  public void VaildationRefreshToken
@@ -38,6 +39,6 @@ public class PostService {
 
 
     public List<CreatePostResponseDto> getAllPosts() {
-        return postRepository.findAll().stream().map(CreatePostResponseDto::new).toList();
+        return postRepository.findAll().stream().map(CreatePostResponseDto::new).toList();//
     }
 }
