@@ -13,6 +13,14 @@ import java.util.List;
 public class PostService {
 
 
+    public String Userinfo(CreatePostResponseDto createPostResponseDto) {
+        long userid = createPostResponseDto.getId();
+        //  public void VaildationRefreshToken
+        //     User userToken = postRepository.findById(userid);  유저 엔티티가있다고 가정 할 경우
+
+        return null;
+    }
+
     private final PostRepository postRepository;
 
     public PostService(PostRepository postRepository) {
@@ -24,6 +32,7 @@ public class PostService {
         postRepository.save(post);
         return new CreatePostResponseDto(post);
     }
+
 
     public List<CreatePostResponseDto> getAllPosts() {
         return postRepository.findAll().stream().map(CreatePostResponseDto::new).toList();
