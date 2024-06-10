@@ -28,8 +28,8 @@ public class ProfileController {
     public ResponseEntity<ProfileResponseDto> updateProfile( @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody ProfileModifyRequestDto modifyRequestDto) {
 
-        String userId = userDetails.getUser().getUserId();
-        return profileService.updateProfile(modifyRequestDto, userId);
+        String userid = userDetails.getUser().getUserid();
+        return profileService.updateProfile(modifyRequestDto, userid);
     }
 
     private boolean authorizePassword(String newPassword) {
