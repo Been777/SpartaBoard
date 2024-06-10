@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.spartaboard.dto.ProfileModifyRequestDto;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 
@@ -25,7 +26,7 @@ public class User extends Timestamped {
 
     @NotBlank
     @Column(nullable = false, unique = true)
-    private String userId;
+    private String userid;
 
     @NotBlank
     @Column(nullable = false)
@@ -55,12 +56,12 @@ public class User extends Timestamped {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime statusChangedAt;
 
-    // Refresh Token을 저장할 필드
     @Column
     private String refreshToken;
 
-    public User(String userId, String username, String password, String email, String introduce, UserStatus role, UserStatus status) {
-        this.userId = userId;
+    public User(String userid, String username, String password, String email,
+                String introduce, UserStatus role, UserStatus status) {
+        this.userid = userid;
         this.username = username;
         this.password = password;
         this.email = email;
@@ -79,5 +80,9 @@ public class User extends Timestamped {
         if (requestDto.getNewPassword() != null) {
             this.password = requestDto.getNewPassword();
         }
+    }
+
+    public void setRefreshToken(String Expiration) {
+
     }
 }
