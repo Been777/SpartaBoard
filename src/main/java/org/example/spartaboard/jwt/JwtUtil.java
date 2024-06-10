@@ -1,25 +1,25 @@
 package org.example.spartaboard.jwt;
 
-import jakarta.servlet.http.HttpServletRequest;
-import org.example.spartaboard.entity.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.spartaboard.entity.UserRoleEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.swing.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+
 @Component
 public class JwtUtil {
     // Header KEY 값
@@ -36,11 +36,13 @@ public class JwtUtil {
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
     // 로그 설정
     public static final Logger logger = LoggerFactory.getLogger("JWT 관련 로그");
+
     @PostConstruct
     public void init() {
         byte[] bytes = Base64.getDecoder().decode(secretKey);
         key = Keys.hmacShaKeyFor(bytes);
     }
+
     // 토큰 생성
     public String createToken(String userid, UserRoleEnum role) {
         Date date = new Date();
@@ -53,6 +55,7 @@ public class JwtUtil {
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                         .compact();
     }
+
     // JWT Cookie 에 저장
     public void addJwtToCookie(String token, HttpServletResponse res) {
         try {
@@ -60,7 +63,7 @@ public class JwtUtil {
             Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token); // Name-Value
             cookie.setPath("/");
 
-    // Response 객체에 Cookie 추가
+            // Response 객체에 Cookie 추가
             res.addCookie(cookie);
         } catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage());
@@ -75,6 +78,7 @@ public class JwtUtil {
         logger.error("Not Found Token");
         throw new NullPointerException("Not Found Token");
     }
+
     // 토큰 검증
     public boolean validateToken(String token) {
         try {
@@ -91,6 +95,7 @@ public class JwtUtil {
         }
         return false;
     }
+
     // 토큰에서 사용자 정보 가져오기
     public Claims getUserInfoFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
@@ -99,7 +104,7 @@ public class JwtUtil {
     // HttpServletRequest 에서 Cookie Value : JWT 가져오기
     public String getTokenFromRequest(HttpServletRequest req) {
         Cookie[] cookies = req.getCookies();
-        if(cookies != null) {
+        if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(AUTHORIZATION_HEADER)) {
                     try {

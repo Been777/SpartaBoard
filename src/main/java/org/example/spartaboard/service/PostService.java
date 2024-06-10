@@ -1,8 +1,10 @@
 package org.example.spartaboard.service;
 
+import jakarta.transaction.Transactional;
 import org.example.spartaboard.dto.CreatePostRequestDto;
 import org.example.spartaboard.dto.CreatePostResponseDto;
 import org.example.spartaboard.entity.Post;
+import org.example.spartaboard.entity.User;
 import org.example.spartaboard.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
@@ -11,8 +13,6 @@ import java.util.List;
 @Service
 
 public class PostService {
-
-
     public String Userinfo(CreatePostResponseDto createPostResponseDto) {
         long userid = createPostResponseDto.getId();
         //  public void VaildationRefreshToken
@@ -27,8 +27,11 @@ public class PostService {
         this.postRepository = postRepository; // 의존성 주입
     }
 
+    @Transactional
     public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto) {
-        Post post = new Post(createPostRequestDto);
+        String content = createPostRequestDto.getContent();
+        User userid = createPostRequestDto.getUserid();
+        Post post = new Post(userid, content); //
         postRepository.save(post);
         return new CreatePostResponseDto(post);
     }
