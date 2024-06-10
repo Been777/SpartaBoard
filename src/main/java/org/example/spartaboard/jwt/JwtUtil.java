@@ -1,20 +1,14 @@
 package org.example.spartaboard.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Key;
-import java.util.Base64;
-import java.util.Date;
+import java.util.*;
+
 import lombok.extern.slf4j.Slf4j;
-import org.example.spartaboard.entity.UserRoleEnum;
+import org.apache.tomcat.util.json.Token;
 import org.example.spartaboard.entity.UserStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -25,21 +19,17 @@ import org.springframework.util.StringUtils;
 @Component
 public class JwtUtil {
 
-
-    // Header KEY 값
     public static final String AUTHORIZATION_HEADER = "Authorization";
-    // 사용자 권한 값의 KEY
+    public static final String REFRESH_AUTHORIZATION_HEADER = "Refresh Authorization";
     public static final String AUTHORIZATION_KEY = "auth";
-    // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
-    // 토큰 만료시간
-    private final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
+    private final long TOKEN_TIME = 30 * 60 * 1000L; // 30분
+    private final long REFRESH_TOKEN_TIME = 14 * 24 * 60 * 60 * 1000L; //2주
 
     @Value("${jwt.secret.key}") // Base64 Encode 한 SecretKey
     private String secretKey;
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-
 
     @PostConstruct
     public void init() {
@@ -48,12 +38,12 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createToken(String username, UserStatus status) {
+    public String createAccessToken(String userId, UserStatus status) {
         Date date = new Date();
 
         return BEARER_PREFIX +
                 Jwts.builder()
-                        .setSubject(username) // 사용자 식별자값(ID)
+                        .setSubject(userId) // 사용자 식별자값(ID)
                         .claim(AUTHORIZATION_KEY, status) // 사용자 권한
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
                         .setIssuedAt(date) // 발급일
@@ -61,14 +51,24 @@ public class JwtUtil {
                         .compact();
     }
 
-    //Refresh 토큰 필요
+    //Refresh 토큰 생성
+    public String createRefreshToken(String userId, UserStatus status) {
+        Date date = new Date();
+
+        return BEARER_PREFIX +
+                Jwts.builder()
+                        .setSubject(userId)
+                        .claim(AUTHORIZATION_KEY, status) // 사용자 권한
+                        .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
+                        .setIssuedAt(date)
+                        .signWith(key, signatureAlgorithm)
+                        .compact();
+    }
+
 
     // header 에서 JWT 가져오기
     public String getJwtFromHeader(HttpServletRequest request) {
-        return request.getHeader(AUTHORIZATION_HEADER);
-    }
-
-    public String getTokenWithoutBearer(String bearerToken) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
@@ -89,6 +89,8 @@ public class JwtUtil {
             log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
         } catch (IllegalArgumentException e) {
             log.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
+        } catch (JwtException e) {
+            log.error(" 토큰이 없거나, 유효하지 않습니다.");
         }
         return false;
     }
@@ -97,4 +99,11 @@ public class JwtUtil {
     public Claims getUserInfoFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
+
+    //토큰 만료시키기 //DB 사용하지 않고 엑세스 토큰과 리프레시 토큰 무효화
+
+
+
+
+
 }

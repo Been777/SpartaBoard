@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.spartaboard.dto.ProfileModifyRequestDto;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -55,6 +56,17 @@ public class User extends Timestamped{
 
     @OneToMany
     List<Post2> PostList = new ArrayList<>();
+
+    //refreshtoken 생성시간 을 테이블에 넣으라는 소리는 없던데..
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime RefreshCreatedAt;
+
+    private RefreshTokenTime refreshTokenUsage;
+
+    @JoinColumn(name = "expired_token")
+    @OneToOne(fetch = FetchType.LAZY)
+    private RefreshToken refreshToken;
 
     public void update(ProfileModifyRequestDto requestDto) {
         if (requestDto.getUsername() != null) {

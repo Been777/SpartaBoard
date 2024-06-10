@@ -17,11 +17,12 @@ import java.io.IOException;
 
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
     private final JwtUtil jwtUtil;
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        setFilterProcessesUrl("/api/user/login");
+        setFilterProcessesUrl("/api/users/login");
     }
 
     @Override
@@ -42,17 +43,23 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         }
     }
 
-    @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
-        String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
+    @Override //로그인 성공 시 // 토큰 추가 후 성공 상태코드와 메세지 반환 설정 필요
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                            FilterChain chain, Authentication authResult) {
+        String userId = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getUserId();
         UserStatus status = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getStatus();
 
-        String token = jwtUtil.createToken(username, status);
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+        String accessToken = jwtUtil.createAccessToken(userId, status);
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
+
+        String refreshToken = jwtUtil.createRefreshToken(userId, status);
+        response.addHeader(jwtUtil.REFRESH_AUTHORIZATION_HEADER, refreshToken);
+
     }
 
-    @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+    @Override //로그인 실패시
+    protected void unsuccessfulAuthentication(HttpServletRequest request,
+                                              HttpServletResponse response, AuthenticationException failed) {
         response.setStatus(401);
     }
 
