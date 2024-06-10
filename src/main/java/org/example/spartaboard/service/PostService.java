@@ -3,9 +3,8 @@ package org.example.spartaboard.service;
 import org.example.spartaboard.dto.CreatePostRequestDto;
 import org.example.spartaboard.dto.CreatePostResponseDto;
 import org.example.spartaboard.entity.Post;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.example.spartaboard.repository.PostRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ import java.util.List;
 public class PostService {
 
 
-private final PostRepository postRepository;
+    private final PostRepository postRepository;
 
     public PostService(PostRepository postRepository) {
         this.postRepository = postRepository; // 의존성 주입
