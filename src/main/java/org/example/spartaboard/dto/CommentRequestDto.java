@@ -6,7 +6,7 @@ import org.example.spartaboard.entity.Comment;
 @Getter
 public class CommentRequestDto {
     private String Contents;
-    private Long commentId;
+    private Long commentid;
     private Long userId;
 
 }

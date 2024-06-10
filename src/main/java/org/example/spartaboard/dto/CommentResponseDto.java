@@ -10,20 +10,20 @@ import org.example.spartaboard.entity.Comment;
 @Setter
 @NoArgsConstructor
 public class CommentResponseDto  {
-    private Long commentId;
+    private Long id;
     private String contents;
     private Long userId;
 
 
-    public CommentResponseDto(Long commentId, String contents, Long userId) {
-        this.commentId = commentId;
+    public CommentResponseDto(Long id, String contents, Long userId) {
+        this.id = id;
         this.contents = contents;
         this.userId = userId;
     }
 
 
     public CommentResponseDto(Comment comment) {
-        this.commentId = comment.getCommentId();
+        this.id = comment.getId();
         this.contents = comment.getContents();
         this.userId=getUserId();
     }

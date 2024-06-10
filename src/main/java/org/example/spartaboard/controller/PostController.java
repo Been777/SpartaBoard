@@ -26,26 +26,26 @@ public class PostController {
     private final PostService postService;
 
     //게시글 수정
-    @PutMapping("{postId}")
+    @PutMapping("{postid}")
     public ResponseEntity<PostResponseDto> updatePost(
-            @PathVariable Long postId,
+            @PathVariable Long postid,
             @RequestBody PostUpdateRequestDto requestDto
 
             ) {
         User user = new User();
-        Post post = postService.updatePost(postId, requestDto, user);
+        Post post = postService.updatePost(postid, requestDto, user);
         PostResponseDto PostResponseDto = new PostResponseDto(post);
 
         return new ResponseEntity<>(PostResponseDto, HttpStatus.OK);
     }
 
     //게시글 삭제
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/{postid}")
     public ResponseEntity<String> deletePost(
-            @PathVariable Long postId,
+            @PathVariable Long postid,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        postService.deletePost(postId, userDetails.getUser());
+        postService.deletePost(postid, userDetails.getUser());
         return ResponseEntity.ok("게시글 삭제 완료");
     }
 }

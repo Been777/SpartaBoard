@@ -23,22 +23,22 @@ public class CommentService {
     }
     //댓글 생성
     @Transactional
-    public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, User user) {
+    public CommentResponseDto createComment(Long postid, CommentRequestDto requestDto, User user) {
         // postId에 해당하는 게시글을 조회, 없으면 Exception
-        Post post = postRepository.findById(postId)
+        Post post = postRepository.findById(postid)
                 .orElseThrow(() -> new DataNotFoundException("게시글을 찾을 수 없습니다."));
         // 새로운 댓글 엔티티 생성 및 저장
         Comment comment = new Comment(post, user, requestDto.getContents());
         commentRepository.save(comment);
         // 생성된 댓글의 정보를 담은 DTO 반환
-        return new CommentResponseDto(comment.getCommentId(), comment.getContents(), requestDto.getUserId());
+        return new CommentResponseDto(comment.getId(), comment.getContents(), requestDto.getUserId());
     }
 
     // 댓글 수정
     @Transactional
-    public Comment updateComment(Long commentId, CommentRequestDto requestDto, User user) {
+    public Comment updateComment(Long commentid, CommentRequestDto requestDto, User user) {
         // commentId에 해당하는 댓글을 조회, 없으면 Exception
-        Comment comment = commentRepository.findById(commentId)
+        Comment comment = commentRepository.findById(commentid)
                 .orElseThrow(() -> new DataNotFoundException("댓글을 찾을 수 없습니다."));
         // 댓글의 작성자와 현재 사용자가 일치하는지 확인
         if (!comment.getUser().equals(user)) {

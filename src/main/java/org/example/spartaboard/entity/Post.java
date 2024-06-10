@@ -13,9 +13,7 @@ import lombok.NoArgsConstructor;
 public class Post extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
-    @Column(nullable = false)
-    private Long postId;
+    private Long id;
 
     @Column(nullable = false)
     private String title;
@@ -23,8 +21,8 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String contents;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "userid")
     private User user;
 
     public Post(String title, String contents, User user) {

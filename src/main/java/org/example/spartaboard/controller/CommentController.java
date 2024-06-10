@@ -22,35 +22,35 @@ public class CommentController {
 
 
 
-    @PostMapping("/{postId}/comment")
+    @PostMapping("/{postid}/comment")
     public ResponseEntity<CommentResponseDto> createComment(
-            @PathVariable Long postId,
+            @PathVariable Long postid,
             @RequestBody CommentRequestDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        CommentResponseDto createDto = commentService.createComment(postId, requestDto,
+        CommentResponseDto createDto = commentService.createComment(postid, requestDto,
                 userDetails.getUser());
 
         return ResponseEntity.ok().body(createDto);
     }
 
-    @PutMapping("/{postId}/comment/{commentId}")
+    @PutMapping("/{postid}/comment/{commentid}")
     public ResponseEntity<CommentResponseDto> updateComment(
-            @PathVariable("postId") Long postId,
-            @PathVariable("commentId") Long commentNum,
+            @PathVariable("postid") Long postid,
+            @PathVariable("commentid") Long commentid,
             @RequestBody CommentRequestDto commentRequestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        Comment comment = commentService.updateComment(postId, commentRequestDto, userDetails.getUser());
+        Comment comment = commentService.updateComment(postid, commentRequestDto, userDetails.getUser());
         return new ResponseEntity<>(new CommentResponseDto(comment), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{postId}/comment/{commentNum}")
+    @DeleteMapping("/{postid}/comment/{commentid}")
     public ResponseEntity<String> deleteComment(
-            @PathVariable("postId") Long postId,
-            @PathVariable("commentId") Long commentId,
+            @PathVariable("postid") Long postId,
+            @PathVariable("commentid") Long commentid,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        commentService.deleteComment(commentId, userDetails.getUser());
+        commentService.deleteComment(commentid, userDetails.getUser());
         return ResponseEntity.ok("댓글 삭제 완료");
     }
 

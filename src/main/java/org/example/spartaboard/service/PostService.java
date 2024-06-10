@@ -18,9 +18,9 @@ public class PostService {
 
     //게시글 수정
     @Transactional
-    public Post updatePost(Long postId, PostUpdateRequestDto requestDto, User user) {
+    public Post updatePost(Long postid, PostUpdateRequestDto requestDto, User user) {
         // postId에 해당하는 게시글을 조회, 없으면 Exception
-        Post post = postRepository.findById(postId)
+        Post post = postRepository.findById(postid)
                 .orElseThrow(() -> new DataNotFoundException("게시글을 찾을 수 없습니다."));
         // 게시글의 작성자와 현재 사용자가 일치하는지 확인
         if (!post.getUser().equals(user)) {
@@ -31,9 +31,9 @@ public class PostService {
     }
     //게시글 삭제
     @Transactional
-    public void deletePost(Long postId, User user) {
+    public void deletePost(Long postid, User user) {
         // postId에 해당하는 게시글을 조회, 없으면 Exception
-        Post post = postRepository.findById(postId)
+        Post post = postRepository.findById(postid)
                 .orElseThrow(() -> new DataNotFoundException("게시글을 찾을 수 없습니다."));
         // 게시글의 작성자와 현재 사용자가 일치하는지 확인
         if (!post.getUser().equals(user)) {
