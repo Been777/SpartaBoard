@@ -35,10 +35,6 @@ public class UserService {
         String userid = requestDto.getUserid();
         String username = requestDto.getUsername();
         String intro = requestDto.getIntro();
-        String passwordBefore = requestDto.getPassword();
-        if(passwordBefore.length()<10){
-            throw new IllegalArgumentException("비밀번호는 최소 10글자 이상이어야 합니다.");
-        }
         String password = passwordEncoder.encode(requestDto.getPassword());
         UserStatus userStatus = UserStatus.ACTIVE;
         String RefreshToken=jwtUtil.createRefreshToken(username);
@@ -51,14 +47,12 @@ public class UserService {
 
         // 회원 중복 확인
         Optional<User> checkUserid = userRepository.findByUserId(userid);
-        if (checkUserid.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
-        }
+        Optional<User> checkUserStatus = userRepository.findByStatus(UserStatus.INACTIVE);
 
         //회원 상태 확인
-        Optional<User> checkUserStatus = userRepository.findByStatus(UserStatus.INACTIVE);
-        if (checkUserStatus.isPresent()) {
-            throw new IllegalArgumentException("탈퇴 상태인 사용자가 존재합니다.");
+
+        if (checkUserid.isPresent() & checkUserStatus.isPresent()) {
+            throw new IllegalArgumentException("중복 됐거나 탈퇴 상태인 사용자가 존재합니다.");
         }
 
         // email 중복확인
