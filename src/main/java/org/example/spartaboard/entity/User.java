@@ -59,7 +59,7 @@ public class User extends Timestamped {
     @Column
     private String refreshToken;
 
-    public User(String userId, String username, String password, String email, String introduce, UserStatus role, UserStatus status) {
+    public User(String userId, String username, String password, String email, String introduce, UserStatus role, UserStatus status , String refreshToken) {
         this.userId = userId;
         this.username = username;
         this.password = password;
@@ -67,7 +67,9 @@ public class User extends Timestamped {
         this.introduce = introduce;
         this.role = role;
         this.status = status;
+        this.refreshToken = refreshToken;
     }
+
 
     public void update(ProfileModifyRequestDto requestDto) {
         if (requestDto.getUsername() != null) {

@@ -41,6 +41,7 @@ public class UserService {
         }
         String password = passwordEncoder.encode(requestDto.getPassword());
         UserStatus userStatus = UserStatus.ACTIVE;
+        String RefreshToken=jwtUtil.createRefreshToken(username);
 
 
         //회원 사용자 ID 조건 확인
@@ -77,7 +78,7 @@ public class UserService {
         }
 
         // 사용자 등록
-        User user = new User(userid, username, password, email, intro, role, userStatus);
+        User user = new User(userid, username, password, email, intro, role, userStatus, RefreshToken);
         userRepository.save(user);
     }
 
