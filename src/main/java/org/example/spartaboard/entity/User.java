@@ -25,7 +25,7 @@ public class User extends Timestamped {
 
     @NotBlank
     @Column(nullable = false, unique = true)
-    private String userid;
+    private String userId;
 
     @NotBlank
     @Column(nullable = false)
@@ -59,15 +59,17 @@ public class User extends Timestamped {
     @Column
     private String refreshToken;
 
-    public User(String userid, String username, String password, String email, String introduce, UserStatus role, UserStatus status) {
-        this.userid = userid;
+    public User(String userId, String username, String password, String email, String introduce, UserStatus role, UserStatus status , String refreshToken) {
+        this.userId = userId;
         this.username = username;
         this.password = password;
         this.email = email;
         this.introduce = introduce;
         this.role = role;
         this.status = status;
+        this.refreshToken = refreshToken;
     }
+
 
     public void update(ProfileModifyRequestDto requestDto) {
         if (requestDto.getUsername() != null) {
