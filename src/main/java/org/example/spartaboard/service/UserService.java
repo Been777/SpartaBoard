@@ -46,7 +46,7 @@ public class UserService {
         }
 
         // 회원 중복 및 탈퇴 확인
-        Optional<User> checkUserid = userRepository.findByUserId(userid);
+        Optional<User> checkUserid = userRepository.findByUserid(userid);
         Optional<User> checkUserStatus = userRepository.findByStatus(UserStatus.INACTIVE);
 
         //회원 상태 확인
