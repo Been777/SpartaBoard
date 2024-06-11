@@ -77,7 +77,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/user")
+    @DeleteMapping("/user/delete")
     public String userDelete(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         userService.deleteById(user.getId());
