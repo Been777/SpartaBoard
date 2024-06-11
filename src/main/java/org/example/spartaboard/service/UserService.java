@@ -45,7 +45,7 @@ public class UserService {
             throw new IllegalArgumentException("사용자 ID는 최소 10글자 이상, 최대 20글자 이하여야 합니다.");
         }
 
-        // 회원 중복 확인
+        // 회원 중복 및 탈퇴 확인
         Optional<User> checkUserid = userRepository.findByUserId(userid);
         Optional<User> checkUserStatus = userRepository.findByStatus(UserStatus.INACTIVE);
 
