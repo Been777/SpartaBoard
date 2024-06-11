@@ -52,16 +52,15 @@ public class UserService {
         }
 
         // 회원 중복 확인
+
         Optional<User> checkUserid = userRepository.findByUserid(userid);
-        if (checkUserid.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
+        Optional<User> checkUserStatus = userRepository.findByStatus(UserStatus.INACTIVE);
+        if (checkUserid.isPresent() && checkUserStatus.isPresent()) {
+            throw new IllegalArgumentException("중복 됐거나 탈퇴한 사용자가 존재합니다.");
         }
 
         //회원 상태 확인
-        Optional<User> checkUserStatus = userRepository.findByStatus(UserStatus.INACTIVE);
-        if (checkUserStatus.isPresent()) {
-            throw new IllegalArgumentException("탈퇴 상태인 사용자가 존재합니다.");
-        }
+
 
         // email 중복확인
         String email = requestDto.getEmail();
